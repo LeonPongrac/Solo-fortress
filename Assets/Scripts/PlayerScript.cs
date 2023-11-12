@@ -15,10 +15,15 @@ public class PlayerScript : MonoBehaviour
 
     public int ability_block = 0;
 
+    private SpriteRenderer spriteRenderer;
+    public PlayerColors color;
+
     private int target;
     void Awake()
     {
         hp = _MAXHP;
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
     private void Update()
     {
@@ -26,9 +31,101 @@ public class PlayerScript : MonoBehaviour
         if (hp > _MAXHP) hp = _MAXHP;
     }
 
+    // Postavlja sprite na normal ovisno o hp
+    public void SetNormalSprite()
+    {
+        float percentage = (float)hp / (float)_MAXHP;
+        string health = "3_health";
+        if (percentage <= (2f / 3f) && percentage > (1f/3f))
+        {
+            health = "2_health";
+        }
+        if (percentage <= (1f / 3f) && percentage > 0f)
+        {
+            health = "1_health";
+        }
+        if (hp <= 0)
+        {
+            health = "0_health";
+        }
+        string spriteName = color.ToString() + "_Rook(" + health + ")";
+        string path = "Sprites/All_Rook_Sprites/Rook_(" + health + ")/" + spriteName;
+        Sprite newSprite = Resources.Load<Sprite>(path);
+        if (newSprite != null)
+        {
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = newSprite;
+            }          
+        }
+        else
+        {
+            Debug.LogError("Sprite not found at path: " + path);
+        }
+    }
+
+     // Postavlja sprite na target ovisno o hp
+    public void SetTargetSprite()
+    {
+        float percentage = (float)hp / (float)_MAXHP;
+        string health = "3_health";
+        if (percentage <= (2f / 3f) && percentage > (1f / 3f))
+        {
+            health = "2_health";
+        }
+        if (percentage <= (1f / 3f) && percentage > 0f)
+        {
+            health = "1_health";
+        }
+        string spriteName = color.ToString() + "_Rook_targeted(" + health + ")";
+        string path = "Sprites/All_Rook_Sprites/Rook_(" + health + ")/" + spriteName;
+        Sprite newSprite = Resources.Load<Sprite>(path);
+        if (newSprite != null)
+        {
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = newSprite;
+            }
+        }
+        else
+        {
+            Debug.LogError("Sprite not found at path: " + path);
+        }
+    }
+
+    // Postavlja sprite na turn ovisno o hp
+
+    public void SetTurnSprite()
+    {
+        float percentage = (float)hp / (float)_MAXHP;
+        string health = "3_health";
+        if (percentage <= (2f / 3f) && percentage > (1f / 3f))
+        {
+            health = "2_health";
+        }
+        if (percentage <= (1f / 3f) && percentage > 0f)
+        {
+            health = "1_health";
+        }
+        string spriteName = color.ToString() + "_Rook_turn(" + health + ")";
+        string path = "Sprites/All_Rook_Sprites/Rook_(" + health + ")/" + spriteName;
+        Sprite newSprite = Resources.Load<Sprite>(path);
+        if (newSprite != null)
+        {
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = newSprite;
+            }
+        }
+        else
+        {
+            Debug.LogError("Sprite not found at path: " + path);
+        }
+    }
+
     public virtual void Ability_Basic()
     {
-        GameObject.Find("Main Camera").GetComponent<Setup>().players[target].GetComponent<PlayerScript>().hp--;         //nisam trijezan dok ovo pisem, ak neko moze malo bolje / ljepse slobodno
+        GameObject.Find("Main Camera").GetComponent<Setup>().players[target].GetComponent<PlayerScript>().hp--;         //nisam trijezan dok ovo pisem, ak neko moze malo bolje / ljepse slobodno **  ma bit ce dobro
     }
 
     public virtual void Ability_1()

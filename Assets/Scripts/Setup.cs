@@ -35,13 +35,19 @@ public class Setup : MonoBehaviour
         }
         RaycastHit info;
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
+        // rubovi player spritea ne aktiviraju if
         if (Physics.Raycast(ray, out info, Mathf.Infinity, LayerMask.GetMask("Player")))
         {
             if (Input.GetMouseButtonDown(0))
             {
                 target = info.transform.gameObject.GetComponent<PlayerScript>()._NUMBER;
                 if (target == turn_player) target = -1;
-                else Debug.Log("TARGET: " + target);
+                else 
+                {
+                    SetNormal();
+                    info.transform.gameObject.GetComponent<PlayerScript>().SetTargetSprite();
+                    Debug.Log("TARGET: " + target); 
+                }
             }
         }
 
@@ -82,9 +88,13 @@ public class Setup : MonoBehaviour
             //Debug.Log(pos);
             p.transform.position = pos;
             p.GetComponent<PlayerScript>()._NUMBER = i;
+            p.GetComponent<PlayerScript>().color = (PlayerColors)i;
+            p.GetComponent<PlayerScript>().SetNormalSprite();
 
             players[i] = p;
         }
+
+        players[turn_player].GetComponent<PlayerScript>().SetTurnSprite();
     }
 
     public void next_turn()
@@ -92,6 +102,20 @@ public class Setup : MonoBehaviour
         players[turn_player].GetComponent<PlayerScript>().turn_end();
         if (++turn_player >= _MAX_PLAYERS) turn_player = 0;
         if (hotseat) target = -1;
+        SetNormal();
+        players[turn_player].GetComponent<PlayerScript>().SetTurnSprite();
         Debug.Log("TURN PLAYER: " + turn_player);
+    }
+
+    //Postavlja sve srpiteove osim turn playera na normal tj. funkcija se koristi za resetiranje spriteova
+    public void SetNormal()
+    {
+        for (int i = 0; i < playerCount; i++)
+        {
+            if (i != turn_player)
+            {
+                players[i].GetComponent<PlayerScript>().SetNormalSprite();
+            }
+        }
     }
 }

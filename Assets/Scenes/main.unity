@@ -229,6 +229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 4197899935843463486, guid: db0a18f316674ef48a48e69bad6e0ebf, type: 3}
+  turn_player: 0
   playerCount: 8
   target: -1
   players:
