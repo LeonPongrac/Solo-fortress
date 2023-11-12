@@ -41,7 +41,7 @@ public class Setup : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 target = info.transform.gameObject.GetComponent<PlayerScript>()._NUMBER;
-                if (target == turn_player) target = -1;
+                if (target == turn_player || info.transform.gameObject.GetComponent<PlayerScript>().hp == 0) target = -1;
                 else 
                 {
                     SetNormal();
@@ -74,7 +74,7 @@ public class Setup : MonoBehaviour
     }
     void SpawnPlayers()
     {
-        Vector2 direction = new Vector2(0, -4);
+        Vector2 direction = new Vector2(0, -3.5f);
         Vector2 axis = new Vector2(-1, 0);
         float angle = 360 / playerCount;
 
@@ -101,6 +101,10 @@ public class Setup : MonoBehaviour
     {
         players[turn_player].GetComponent<PlayerScript>().turn_end();
         if (++turn_player >= _MAX_PLAYERS) turn_player = 0;
+        while (players[turn_player].GetComponent<PlayerScript>().hp == 0)           //TODO: winner declaration
+        {
+            if (++turn_player >= _MAX_PLAYERS) turn_player = 0;
+        }
         if (hotseat) target = -1;
         SetNormal();
         players[turn_player].GetComponent<PlayerScript>().SetTurnSprite();
