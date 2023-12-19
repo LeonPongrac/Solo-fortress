@@ -1,0 +1,21 @@
+using System;
+using UnityEngine;
+using Unity.Networking.Transport;
+
+public class NetMessage
+{
+    public OpCode Code {set; get;}
+
+    public virtual void Serialize(ref Unity.Collections.DataStreamWriter writer){
+        writer.WriteByte((byte)Code);
+    }
+    public virtual void Deserialize(Unity.Collections.DataStreamReader reader){
+        
+    }
+    public virtual void RecievedOnClient(){
+
+    }
+    public virtual void RecievedOnServer(NetworkConnection connection){
+        
+    }
+}
