@@ -72,8 +72,15 @@ public class Setup : MonoBehaviour
         }
 
     }
-    void SpawnPlayers()
+    public void SpawnPlayers()
     {
+        if (players[0] != null) 
+            for (int i = 0; i < players.Length; i++) {
+                players[i] = null;        //reset
+                GameObject t = GameObject.Find("Player " + (i));
+                Destroy(t);
+            }
+
         Vector2 direction = new Vector2(0, -3.5f);
         Vector2 axis = new Vector2(-1, 0);
         float angle = 360 / playerCount;
