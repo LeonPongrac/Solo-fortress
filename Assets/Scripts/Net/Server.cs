@@ -93,6 +93,7 @@ public class Server : MonoBehaviour
         NetworkConnection c;
         while((c = driver.Accept()) != default(NetworkConnection)){
             connections.Add(c);
+            Debug.Log("new connection accepted");
         }
     }
 

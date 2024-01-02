@@ -9,7 +9,7 @@ using UnityEngine;
 public class Setup : MonoBehaviour
 {
     private Camera currentCamera;
-    private bool hotseat;
+    public bool hotseat;
 
     public GameObject player;
     public int turn_player = 0;
@@ -19,7 +19,6 @@ public class Setup : MonoBehaviour
     public GameObject[] players;
     void Awake()
     {
-        hotseat = true;
 
         if (playerCount > _MAX_PLAYERS) playerCount = _MAX_PLAYERS;
         SpawnPlayers();
