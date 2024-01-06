@@ -29,6 +29,7 @@ public class PlayerScript : MonoBehaviour
     {
         target = GameObject.Find("Main Camera").GetComponent<Setup>().target;
         if (hp > _MAXHP) hp = _MAXHP;
+
     }
 
     // Postavlja sprite na normal ovisno o hp
@@ -93,7 +94,7 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    // Postavlja sprite na turn ovisno o hp
+    // Postavlja sprite na turn ovisno o hp 
 
     public void SetTurnSprite()
     {
@@ -123,10 +124,19 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    public void UpdateHealthBar()
+    {
+        // get gameobject that is child of this gameobject with name HealthBar, which is an Image type filed horizontal, set its fill amount to hp/maxhp
+        GameObject healthBar = GameObject.Find("Player "+ _NUMBER).gameObject.transform.GetChild(0).gameObject.transform.GetChild(2).gameObject;
+        healthBar.GetComponent<UnityEngine.UI.Image>().fillAmount = (float)hp / (float)_MAXHP;
+    }
+
     public virtual void Ability_Basic()
     {
-        GameObject.Find("Main Camera").GetComponent<Setup>().players[target].GetComponent<PlayerScript>().hp--;         //nisam trijezan dok ovo pisem, ak neko moze malo bolje / ljepse slobodno **  ma bit ce dobro
+        GameObject.Find("Main Camera").GetComponent<Setup>().players[target].GetComponent<PlayerScript>().hp--;         //nisam trijezan dok ovo pisem, ak neko moze malo bolje / ljepse slobodno **  ma bit ce 
+        GameObject.Find("Main Camera").GetComponent<Setup>().players[target].GetComponent<PlayerScript>().UpdateHealthBar();
     }
+
 
     public virtual void Ability_1()
     {

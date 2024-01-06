@@ -5,6 +5,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Setup : MonoBehaviour
 {
@@ -17,11 +18,23 @@ public class Setup : MonoBehaviour
     public int playerCount;
     public int target = -1;
     public GameObject[] players;
+
+    private TextMeshProUGUI secondaryInfoText;
+    public PlayerColors color;
+
+
+
     void Awake()
     {
 
         if (playerCount > _MAX_PLAYERS) playerCount = _MAX_PLAYERS;
         SpawnPlayers();
+
+        secondaryInfoText = GameObject.Find("SecondaryInfo").GetComponent<TextMeshProUGUI>();
+
+        updateSecondaryInfoColor();
+      
+
     }
 
     // Update is called once per frame
@@ -53,24 +66,51 @@ public class Setup : MonoBehaviour
         //OVO DOLE MAKNUT KAD SE NAPRAVI HUD, TRENUTNO NEMA CHECK JEL LEGALNO ISPUCAT ABILITY
         if (Input.GetKeyDown("1"))
         {
-            players[turn_player].GetComponent<PlayerScript>().Ability_Basic();
-            players[turn_player].GetComponent<PlayerScript>().turn_end();
-            next_turn();
+            BasicAbility();
         }
         if (Input.GetKeyDown("2"))
         {
-            players[turn_player].GetComponent<PlayerScript>().Ability_1();
-            players[turn_player].GetComponent<PlayerScript>().turn_end();
-            next_turn();
+            Ability1();
         }
         if (Input.GetKeyDown("3"))
         {
-            players[turn_player].GetComponent<PlayerScript>().Ability_2();
-            players[turn_player].GetComponent<PlayerScript>().turn_end();
-            next_turn();
+            Ability2();
         }
 
+        // DISABLE ATTACK BUTTON IF NO TARGET
+        if ( target == -1) {
+            
+            GameObject.Find("Attack").GetComponent<UnityEngine.UI.Button>().interactable = false;
+        } else
+        {
+            GameObject.Find("Attack").GetComponent<UnityEngine.UI.Button>().interactable = true;
+        }
+
+    }   
+
+    public void BasicAbility()
+    {
+        players[turn_player].GetComponent<PlayerScript>().Ability_Basic();
+        players[turn_player].GetComponent<PlayerScript>().turn_end();
+
+        next_turn();
     }
+
+    public void Ability1()
+    {
+        players[turn_player].GetComponent<PlayerScript>().Ability_1();
+        players[turn_player].GetComponent<PlayerScript>().turn_end();
+        next_turn();
+    }
+
+    public void Ability2()
+    {
+        players[turn_player].GetComponent<PlayerScript>().Ability_2();
+        players[turn_player].GetComponent<PlayerScript>().turn_end();
+        next_turn();
+    }
+
+
     public void SpawnPlayers()
     {
         if (players[0] != null) 
@@ -97,10 +137,11 @@ public class Setup : MonoBehaviour
             p.GetComponent<PlayerScript>().color = (PlayerColors)i;
             p.GetComponent<PlayerScript>().SetNormalSprite();
 
-            players[i] = p;
+            players[i] = p; 
         }
 
         players[turn_player].GetComponent<PlayerScript>().SetTurnSprite();
+
     }
 
     public void next_turn()
@@ -115,9 +156,17 @@ public class Setup : MonoBehaviour
         SetNormal();
         players[turn_player].GetComponent<PlayerScript>().SetTurnSprite();
         Debug.Log("TURN PLAYER: " + turn_player);
+
+        updateSecondaryInfoColor    ();
     }
 
-    //Postavlja sve srpiteove osim turn playera na normal tj. funkcija se koristi za resetiranje spriteova
+    private void updateSecondaryInfoColor()
+    {
+        secondaryInfoText.text = ((PlayerColors)turn_player).ToString() + " rook";
+        secondaryInfoText.color = PlayerColorUtils.GetColor((PlayerColors)turn_player);
+    }
+
+    //Postavlja sve srpiteove osim turn playera na no   rmal tj. funkcija se etukoristi za resetiranje spriteova
     public void SetNormal()
     {
         for (int i = 0; i < playerCount; i++)
