@@ -2,7 +2,6 @@ using Unity.Networking.Transport;
 
 public class NetStartGame : NetMessage
 {
-    public int whiteclass, blackclass;
     public NetStartGame(){
         Code = OpCode.START_GAME;
     }

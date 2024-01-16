@@ -4,25 +4,31 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Networking.Transport;
 using UnityEngine;
 using TMPro;
 
 public class Setup : MonoBehaviour
 {
     private Camera currentCamera;
-    public bool hotseat;
+    public GameObject MainMenu;
+    public GameObject Background;
+    public GameObject connectButton;
+    public GameObject IPinput;
 
+    public bool hotseat;
     public GameObject player;
     public int turn_player = 0;
     private int _MAX_PLAYERS = 8;
     public int playerCount;
+    private int connectedPlayer = 0;
     public int target = -1;
     public GameObject[] players;
 
     private TextMeshProUGUI secondaryInfoText;
     public PlayerColors color;
 
-
+    private int _MYINDEX = -1;
 
     void Awake()
     {
@@ -33,8 +39,8 @@ public class Setup : MonoBehaviour
         secondaryInfoText = GameObject.Find("SecondaryInfo").GetComponent<TextMeshProUGUI>();
 
         updateSecondaryInfoColor();
-      
 
+        RegisterEvents();
     }
 
     // Update is called once per frame
@@ -176,5 +182,62 @@ public class Setup : MonoBehaviour
                 players[i].GetComponent<PlayerScript>().SetNormalSprite();
             }
         }
+    }
+
+    //net stuff
+    private void RegisterEvents()
+    {
+        NetUtility.S_WELCOME += OnWelcomeServer;
+        NetUtility.C_WELCOME += OnWelcomeClient;
+
+        NetUtility.C_START_GAME += OnStartGameClient;
+
+        //NetUtility.S_MAKE_MOVE += OnMakeMoveServer;
+        //NetUtility.C_MAKE_MOVE += OnMakeMoveClient;
+    }
+
+    private void UnRegisterEvents()
+    {
+        NetUtility.S_WELCOME -= OnWelcomeServer;
+        NetUtility.C_WELCOME -= OnWelcomeClient;
+
+        NetUtility.C_START_GAME -= OnStartGameClient;
+
+        //NetUtility.S_MAKE_MOVE -= OnMakeMoveServer;
+        //NetUtility.C_MAKE_MOVE -= OnMakeMoveClient;
+    }
+
+    private void OnWelcomeServer(NetMessage message, NetworkConnection connection)
+    {
+        //Client connected, assign color and bounce back
+        NetWelcome nw = message as NetWelcome;
+
+        nw.Index = ++connectedPlayer;
+
+        Server.Instance.SendToClient(connection, nw);
+
+        if (connectedPlayer == playerCount - 1)
+        {
+            NetStartGame sg = new NetStartGame();
+
+            Server.Instance.Broadcast(sg);
+        }
+    }
+    private void OnWelcomeClient(NetMessage message)
+    {
+        NetWelcome nw = message as NetWelcome;
+        _MYINDEX = nw.Index;
+        Debug.Log("My turn: " + _MYINDEX);
+        connectButton.SetActive(false);
+        IPinput.SetActive(false);
+    }
+    private void OnStartGameClient(NetMessage message)
+    {
+        NetStartGame msg = message as NetStartGame;
+        hotseat = false;
+
+        MainMenu.SetActive(false);          //activate on rematch / quit
+        Background.SetActive(false);
+
     }
 }

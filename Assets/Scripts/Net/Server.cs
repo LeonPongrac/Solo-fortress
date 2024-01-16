@@ -33,7 +33,7 @@ public class Server : MonoBehaviour
             Debug.Log("Listening on port " + endPoint.Port);
         }
 
-        connections = new NativeList<NetworkConnection>(2, Allocator.Persistent);
+        connections = new NativeList<NetworkConnection>(GameObject.Find("Main Camera").GetComponent<Setup>().playerCount, Allocator.Persistent);
         isActive = true;
     }
     public void Shutdown(){

@@ -6,7 +6,6 @@ using System.IO;
 public class Client : MonoBehaviour
 {
     public static Client Instance { set; get;}
-    private GameObject[] classes;
 
     private void Awake() {
         Instance = this;

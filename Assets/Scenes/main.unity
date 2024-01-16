@@ -440,11 +440,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'TODO:
 
-    -when connection is accepted, send netwelcome and disable connect
-    button and inputfield
-
-    -decide number of players as host, when there are
-    that many connections start game
+    -decide number of players as host, when there are that many
+    connections start game
 
     -adapt game to online'
   m_isRightToLeft: 0
@@ -1650,6 +1647,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068220227c19bee438263760c9b9f401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MainMenu: {fileID: 1895498419}
+  Background: {fileID: 322797362}
+  connectButton: {fileID: 280326245}
+  IPinput: {fileID: 1157000493}
   hotseat: 0
   player: {fileID: 4197899935843463486, guid: db0a18f316674ef48a48e69bad6e0ebf, type: 3}
   turn_player: 0
@@ -3491,7 +3492,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Block
+  m_text: Sabotage
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ff8f0407f12378f499f7ee9bc09c7e85, type: 2}
   m_sharedMaterial: {fileID: 4721455997965348079, guid: ff8f0407f12378f499f7ee9bc09c7e85, type: 2}
@@ -4446,7 +4447,7 @@ GameObject:
   - component: {fileID: 1382404726}
   - component: {fileID: 1382404725}
   m_Layer: 5
-  m_Name: Block
+  m_Name: Sabotage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
