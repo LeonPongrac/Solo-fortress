@@ -92,6 +92,7 @@ public class Client : MonoBehaviour
         driver.BeginSend(connection, out writer);
         msg.Serialize(ref writer);
         driver.EndSend(writer);
+        Debug.Log("msg sent to server");
     }
 
     private void RegisterToEvent()

@@ -19,9 +19,9 @@ public class Setup : MonoBehaviour
     public bool hotseat;
     public GameObject player;
     public int turn_player = 0;
-    private int _MAX_PLAYERS = 8;
+    private int _MAX_PLAYERS = 2;
     public int playerCount;
-    private int connectedPlayer = 0;
+    private int connectedPlayer = -1;
     public int target = -1;
     public GameObject[] players;
 
@@ -64,27 +64,13 @@ public class Setup : MonoBehaviour
                 {
                     SetNormal();
                     info.transform.gameObject.GetComponent<PlayerScript>().SetTargetSprite();
-                    Debug.Log("TARGET: " + target); 
+                    //Debug.Log("TARGET: " + target); 
                 }
             }
         }
 
-        //OVO DOLE MAKNUT KAD SE NAPRAVI HUD, TRENUTNO NEMA CHECK JEL LEGALNO ISPUCAT ABILITY
-        if (Input.GetKeyDown("1"))
-        {
-            BasicAbility();
-        }
-        if (Input.GetKeyDown("2"))
-        {
-            Ability1();
-        }
-        if (Input.GetKeyDown("3"))
-        {
-            Ability2();
-        }
-
         // DISABLE ATTACK BUTTON IF NO TARGET or if online and not on turn
-        if ( target == -1 || (turn_player != _MYINDEX) && !hotseat) {
+        if (target == -1 || (turn_player != _MYINDEX) && !hotseat) {
             
             GameObject.Find("Attack").GetComponent<UnityEngine.UI.Button>().interactable = false;
             GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = false;
@@ -95,31 +81,37 @@ public class Setup : MonoBehaviour
             GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = true;
             GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = true;
         }
+        //disable abilities if sabotaged
+        if(players[turn_player].GetComponent<PlayerScript>().ability_block > 0)
+        {
+            GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = false;
+            GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = false;
+        }
+        else
+        {
+            GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = true;
+            GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = true;
+        }
 
-    }   
-
-    public void BasicAbility()
-    {
-        players[turn_player].GetComponent<PlayerScript>().Ability_Basic();
-        players[turn_player].GetComponent<PlayerScript>().turn_end();
-
-        next_turn();
     }
-
-    public void Ability1()
+    public void useAbility(int a)
     {
-        players[turn_player].GetComponent<PlayerScript>().Ability_1();
-        players[turn_player].GetComponent<PlayerScript>().turn_end();
-        next_turn();
+        if (hotseat)
+        {
+            if (a == 1) players[turn_player].GetComponent<PlayerScript>().Ability_1();
+            else if (a == 2) players[turn_player].GetComponent<PlayerScript>().Ability_2();
+            else players[turn_player].GetComponent<PlayerScript>().Ability_Basic();
+            next_turn();
+        }
+        else
+        {
+            NetMakeMove mm = new NetMakeMove();
+            mm.player = _MYINDEX;
+            mm.target = target;
+            mm.ability = a;
+            Client.Instance.SendToServer(mm);
+        }
     }
-
-    public void Ability2()
-    {
-        players[turn_player].GetComponent<PlayerScript>().Ability_2();
-        players[turn_player].GetComponent<PlayerScript>().turn_end();
-        next_turn();
-    }
-
 
     public void SpawnPlayers()
     {
@@ -162,7 +154,7 @@ public class Setup : MonoBehaviour
         {
             if (++turn_player >= _MAX_PLAYERS) turn_player = 0;
         }
-        if (hotseat) target = -1;
+        target = -1;
         SetNormal();
         players[turn_player].GetComponent<PlayerScript>().SetTurnSprite();
         Debug.Log("TURN PLAYER: " + turn_player);
@@ -196,8 +188,8 @@ public class Setup : MonoBehaviour
 
         NetUtility.C_START_GAME += OnStartGameClient;
 
-        //NetUtility.S_MAKE_MOVE += OnMakeMoveServer;
-        //NetUtility.C_MAKE_MOVE += OnMakeMoveClient;
+        NetUtility.S_MAKE_MOVE += OnMakeMoveServer;
+        NetUtility.C_MAKE_MOVE += OnMakeMoveClient;
     }
 
     private void UnRegisterEvents()
@@ -207,8 +199,8 @@ public class Setup : MonoBehaviour
 
         NetUtility.C_START_GAME -= OnStartGameClient;
 
-        //NetUtility.S_MAKE_MOVE -= OnMakeMoveServer;
-        //NetUtility.C_MAKE_MOVE -= OnMakeMoveClient;
+        NetUtility.S_MAKE_MOVE -= OnMakeMoveServer;
+        NetUtility.C_MAKE_MOVE -= OnMakeMoveClient;
     }
 
     private void OnWelcomeServer(NetMessage message, NetworkConnection connection)
@@ -217,6 +209,7 @@ public class Setup : MonoBehaviour
         NetWelcome nw = message as NetWelcome;
 
         nw.Index = ++connectedPlayer;
+        Debug.Log("new connection: " + connectedPlayer);
 
         Server.Instance.SendToClient(connection, nw);
 
@@ -243,5 +236,23 @@ public class Setup : MonoBehaviour
         MainMenu.SetActive(false);          //activate on rematch / quit
         Background.SetActive(false);
 
+    }
+    private void OnMakeMoveServer(NetMessage message, NetworkConnection connection)
+    {
+        NetMakeMove mm = message as NetMakeMove;
+        //check hax here
+
+        //recv and broadcast
+        Server.Instance.Broadcast(mm);
+    }
+    private void OnMakeMoveClient(NetMessage message)
+    {
+        NetMakeMove mm = message as NetMakeMove;
+        target = mm.target;
+        if(mm.ability == 1) players[mm.player].GetComponent<PlayerScript>().Ability_1();
+        else if(mm.ability == 2) players[mm.player].GetComponent<PlayerScript>().Ability_2();
+        else players[mm.player].GetComponent<PlayerScript>().Ability_Basic();
+
+        next_turn();
     }
 }

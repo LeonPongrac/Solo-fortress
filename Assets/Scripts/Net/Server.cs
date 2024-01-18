@@ -114,11 +114,12 @@ public class Server : MonoBehaviour
         driver.BeginSend(networkConnection, out writer);
         msg.Serialize(ref writer);
         driver.EndSend(writer);
+        Debug.Log($"{msg.Code} sent to client");
     }
     public void Broadcast(NetMessage msg){
         for(int i = 0; i < connections.Length; i++){
             if(connections[i].IsCreated){
-                Debug.Log($"Broadcasting {msg.Code} to all connections ({i} / {connections.Length})");
+                Debug.Log($"Broadcasting {msg.Code} to all connections ({i + 1} / {connections.Length})");
                 SendToClient(connections[i], msg);
             }
         }

@@ -31,15 +31,15 @@ public class OnlineGUI : MonoBehaviour
 
     public void HostButton()
     {
-        server.Init(25565);
-        client.Init("127.0.0.1", 25565);
-        Debug.Log("hosting on port " + 25565);
+        server.Init(288);
+        client.Init("127.0.0.1", 288);
+        Debug.Log("hosting on port " + 288);
         setup.hotseat = false;
     }
 
     public void ConnectButton()
     {
-        client.Init(addressInput.text, 25565);
+        client.Init(addressInput.text, 288);
         Debug.Log("connect button");
         setup.hotseat = false;
     }
