@@ -141,6 +141,8 @@ public class PlayerScript : MonoBehaviour
     public virtual void Ability_1()
     {
         ++hp;
+        GameObject.Find("Main Camera").GetComponent<Setup>().players[target].GetComponent<PlayerScript>().hp++;
+        GameObject.Find("Main Camera").GetComponent<Setup>().players[target].GetComponent<PlayerScript>().UpdateHealthBar();
     }
 
     public virtual void Ability_2()

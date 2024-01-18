@@ -83,13 +83,17 @@ public class Setup : MonoBehaviour
             Ability2();
         }
 
-        // DISABLE ATTACK BUTTON IF NO TARGET
-        if ( target == -1) {
+        // DISABLE ATTACK BUTTON IF NO TARGET or if online and not on turn
+        if ( target == -1 || (turn_player != _MYINDEX) && !hotseat) {
             
             GameObject.Find("Attack").GetComponent<UnityEngine.UI.Button>().interactable = false;
+            GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = false;
+            GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = false;
         } else
         {
             GameObject.Find("Attack").GetComponent<UnityEngine.UI.Button>().interactable = true;
+            GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = true;
+            GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = true;
         }
 
     }   
