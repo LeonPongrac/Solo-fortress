@@ -78,21 +78,14 @@ public class Setup : MonoBehaviour
         } else
         {
             GameObject.Find("Attack").GetComponent<UnityEngine.UI.Button>().interactable = true;
-            GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = true;
-            GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = true;
-        }
-        //disable abilities if sabotaged
-        if(players[turn_player].GetComponent<PlayerScript>().ability_block > 0)
-        {
-            GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = false;
-            GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = false;
-        }
-        else
-        {
-            GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = true;
-            GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = true;
-        }
 
+            //disable abilities if sabotaged
+            if (players[turn_player].GetComponent<PlayerScript>().ability_block == 0)
+            {
+                GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = true;
+                GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = true;
+            }
+        }
     }
     public void useAbility(int a)
     {
