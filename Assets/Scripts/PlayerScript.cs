@@ -18,7 +18,7 @@ public class PlayerScript : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     public PlayerColors color;
 
-    private int target;
+    public int target;
     void Awake()
     {
         hp = _MAXHP;

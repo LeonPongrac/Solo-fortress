@@ -242,6 +242,7 @@ public class Setup : MonoBehaviour
     {
         NetMakeMove mm = message as NetMakeMove;
         target = mm.target;
+        players[mm.player].GetComponent<PlayerScript>().target = mm.target;
         if(mm.ability == 1) players[mm.player].GetComponent<PlayerScript>().Ability_1();
         else if(mm.ability == 2) players[mm.player].GetComponent<PlayerScript>().Ability_2();
         else players[mm.player].GetComponent<PlayerScript>().Ability_Basic();
