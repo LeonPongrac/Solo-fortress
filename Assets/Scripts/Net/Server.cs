@@ -17,13 +17,15 @@ public class Server : MonoBehaviour
     private bool isActive = false;
     private const float keepAliveTickRate = 20.0f;
     private float lastKeepAlive;
+    private int playerNumber;
 
     public Action connectionDropped;
 
-    public void Init(ushort port){
+    public void Init(ushort port, int _playerNumber){
         driver = NetworkDriver.Create();
         NetworkEndpoint endPoint = NetworkEndpoint.AnyIpv4;
         endPoint.Port = port;
+        playerNumber = _playerNumber;
 
         if(driver.Bind(endPoint) != 0){
             Debug.Log("Failed to bind on port " + endPoint.Port);
@@ -32,8 +34,9 @@ public class Server : MonoBehaviour
             driver.Listen();
             Debug.Log("Listening on port " + endPoint.Port);
         }
+        GameObject.Find("Main Camera").GetComponent<Setup>().playerCount = playerNumber;
 
-        connections = new NativeList<NetworkConnection>(GameObject.Find("Main Camera").GetComponent<Setup>().playerCount, Allocator.Persistent);
+        connections = new NativeList<NetworkConnection>(playerNumber, Allocator.Persistent);
         isActive = true;
     }
     public void Shutdown(){
