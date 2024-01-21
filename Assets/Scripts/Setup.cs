@@ -26,6 +26,7 @@ public class Setup : MonoBehaviour
     public GameObject[] players;
 
     private TextMeshProUGUI secondaryInfoText;
+    private TextMeshProUGUI primaryInfoText;
     public PlayerColors color;
 
     private int _MYINDEX = -1;
@@ -37,9 +38,10 @@ public class Setup : MonoBehaviour
         SpawnPlayers();
 
         secondaryInfoText = GameObject.Find("SecondaryInfo").GetComponent<TextMeshProUGUI>();
+        primaryInfoText = GameObject.Find("PrimaryInfo").GetComponent<TextMeshProUGUI>();
 
         updateSecondaryInfoColor();
-
+        
         RegisterEvents();
     }
 
@@ -60,7 +62,7 @@ public class Setup : MonoBehaviour
             {
                 target = info.transform.gameObject.GetComponent<PlayerScript>()._NUMBER;
                 if (target == turn_player || info.transform.gameObject.GetComponent<PlayerScript>().hp == 0) target = -1;
-                else 
+                else
                 {
                     SetNormal();
                     info.transform.gameObject.GetComponent<PlayerScript>().SetTargetSprite();
@@ -70,12 +72,14 @@ public class Setup : MonoBehaviour
         }
 
         // DISABLE ATTACK BUTTON IF NO TARGET or if online and not on turn
-        if (target == -1 || (turn_player != _MYINDEX) && !hotseat) {
-            
+        if (target == -1 || (turn_player != _MYINDEX) && !hotseat)
+        {
+
             GameObject.Find("Attack").GetComponent<UnityEngine.UI.Button>().interactable = false;
             GameObject.Find("Heal").GetComponent<UnityEngine.UI.Button>().interactable = false;
             GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = false;
-        } else
+        }
+        else
         {
             GameObject.Find("Attack").GetComponent<UnityEngine.UI.Button>().interactable = true;
 
@@ -86,7 +90,17 @@ public class Setup : MonoBehaviour
                 GameObject.Find("Sabotage").GetComponent<UnityEngine.UI.Button>().interactable = true;
             }
         }
+
+        if (!hotseat && _MYINDEX != -1){
+            if (turn_player == _MYINDEX){
+                players[_MYINDEX].GetComponent<PlayerScript>().setMyPlayerHaloVisiblity(false);
+            } else {
+                players[_MYINDEX].GetComponent<PlayerScript>().setMyPlayerHaloVisiblity(true);
+            }
+        }
     }
+
+
     public void useAbility(int a)
     {
         if (hotseat)
@@ -131,7 +145,14 @@ public class Setup : MonoBehaviour
             p.GetComponent<PlayerScript>()._NUMBER = i;
             p.GetComponent<PlayerScript>().color = (PlayerColors)i;
             p.GetComponent<PlayerScript>().SetNormalSprite();
-
+            if (!hotseat && _MYINDEX != -1 && i == _MYINDEX)
+            {
+                p.GetComponent<PlayerScript>().setMyPlayerHaloVisiblity(true);
+            } 
+            else
+            {
+                p.GetComponent<PlayerScript>().setMyPlayerHaloVisiblity(false);
+            }
             players[i] = p; 
         }
 
@@ -153,12 +174,26 @@ public class Setup : MonoBehaviour
         Debug.Log("TURN PLAYER: " + turn_player);
 
         updateSecondaryInfoColor    ();
+        updatePrimaryInfoText();
     }
 
     private void updateSecondaryInfoColor()
     {
         secondaryInfoText.text = ((PlayerColors)turn_player).ToString() + " rook";
         secondaryInfoText.color = PlayerColorUtils.GetColor((PlayerColors)turn_player);
+    }
+
+    private void updatePrimaryInfoText()
+    {
+        if (!hotseat && _MYINDEX == turn_player)
+        {
+            primaryInfoText.text = "YOUR TURN!";
+        }
+        else
+        {
+            primaryInfoText.text = "CURRENT TURN:";
+        }
+       
     }
 
     //Postavlja sve srpiteove osim turn playera na no   rmal tj. funkcija se etukoristi za resetiranje spriteova
@@ -220,6 +255,7 @@ public class Setup : MonoBehaviour
         Debug.Log("My turn: " + _MYINDEX);
         connectButton.SetActive(false);
         IPinput.SetActive(false);
+
     }
     private void OnStartGameClient(NetMessage message)
     {
@@ -229,6 +265,7 @@ public class Setup : MonoBehaviour
         MainMenu.SetActive(false);          //activate on rematch / quit
         Background.SetActive(false);
 
+        updatePrimaryInfoText();
     }
     private void OnMakeMoveServer(NetMessage message, NetworkConnection connection)
     {

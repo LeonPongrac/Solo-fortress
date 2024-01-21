@@ -23,6 +23,8 @@ public class PlayerScript : MonoBehaviour
     {
         hp = _MAXHP;
 
+        //setMyPlayerHaloVisiblity(false);
+
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
     private void Update()
@@ -129,6 +131,12 @@ public class PlayerScript : MonoBehaviour
         // get gameobject that is child of this gameobject with name HealthBar, which is an Image type filed horizontal, set its fill amount to hp/maxhp
         GameObject healthBar = GameObject.Find("Player "+ _NUMBER).gameObject.transform.GetChild(0).gameObject.transform.GetChild(2).gameObject;
         healthBar.GetComponent<UnityEngine.UI.Image>().fillAmount = (float)hp / (float)_MAXHP;
+    }
+
+    public void setMyPlayerHaloVisiblity(bool visiblity)
+    {
+        GameObject halo = GameObject.Find("Player " + _NUMBER).gameObject.transform.GetChild(0).gameObject.transform.GetChild(3).gameObject;
+        halo.SetActive(visiblity);
     }
 
     public virtual void Ability_Basic()
