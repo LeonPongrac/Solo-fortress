@@ -98,6 +98,7 @@ public class Client : MonoBehaviour
     private void RegisterToEvent()
     {
         NetUtility.C_KEEP_ALIVE += OnKeepAlive;
+        Debug.Log("RegisterToEvent()");
     }
     private void UnregisterToEvent()
     {

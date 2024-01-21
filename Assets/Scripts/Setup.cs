@@ -19,7 +19,7 @@ public class Setup : MonoBehaviour
     public bool hotseat;
     public GameObject player;
     public int turn_player = 0;
-    private int _MAX_PLAYERS = 2;
+    private int _MAX_PLAYERS = 8;
     public int playerCount;
     private int connectedPlayer = -1;
     public int target = -1;
@@ -31,7 +31,12 @@ public class Setup : MonoBehaviour
 
     private int _MYINDEX = -1;
 
-    void Awake()
+    private void Awake()
+    {
+        GameSetup();
+        RegisterEvents();
+    }
+    void GameSetup()
     {
 
         if (playerCount > _MAX_PLAYERS) playerCount = _MAX_PLAYERS;
@@ -41,8 +46,6 @@ public class Setup : MonoBehaviour
         primaryInfoText = GameObject.Find("PrimaryInfo").GetComponent<TextMeshProUGUI>();
 
         updateSecondaryInfoColor();
-        
-        RegisterEvents();
     }
 
     // Update is called once per frame
@@ -91,13 +94,13 @@ public class Setup : MonoBehaviour
             }
         }
 
-        if (!hotseat && _MYINDEX != -1){
+        /*if (!hotseat && _MYINDEX != -1){
             if (turn_player == _MYINDEX){
                 players[_MYINDEX].GetComponent<PlayerScript>().setMyPlayerHaloVisiblity(false);
             } else {
                 players[_MYINDEX].GetComponent<PlayerScript>().setMyPlayerHaloVisiblity(true);
             }
-        }
+        }*/
     }
 
 
@@ -145,14 +148,14 @@ public class Setup : MonoBehaviour
             p.GetComponent<PlayerScript>()._NUMBER = i;
             p.GetComponent<PlayerScript>().color = (PlayerColors)i;
             p.GetComponent<PlayerScript>().SetNormalSprite();
-            if (!hotseat && _MYINDEX != -1 && i == _MYINDEX)
+            /*if (!hotseat && _MYINDEX != -1 && i == _MYINDEX)
             {
                 p.GetComponent<PlayerScript>().setMyPlayerHaloVisiblity(true);
             } 
             else
             {
                 p.GetComponent<PlayerScript>().setMyPlayerHaloVisiblity(false);
-            }
+            }*/
             players[i] = p; 
         }
 
@@ -237,6 +240,7 @@ public class Setup : MonoBehaviour
         NetWelcome nw = message as NetWelcome;
 
         nw.Index = ++connectedPlayer;
+        nw.playerCount = playerCount;
         Debug.Log("new connection: " + connectedPlayer);
 
         Server.Instance.SendToClient(connection, nw);
@@ -252,9 +256,11 @@ public class Setup : MonoBehaviour
     {
         NetWelcome nw = message as NetWelcome;
         _MYINDEX = nw.Index;
-        Debug.Log("My turn: " + _MYINDEX);
+        playerCount = nw.playerCount;
+        Debug.Log("My turn: " + _MYINDEX + "Number of players: " + playerCount);
         connectButton.SetActive(false);
         IPinput.SetActive(false);
+        GameSetup();
 
     }
     private void OnStartGameClient(NetMessage message)

@@ -3,6 +3,7 @@ using Unity.Networking.Transport;
 public class NetWelcome : NetMessage
 {
     public int Index {set; get;}
+    public int playerCount { set; get; }
     public NetWelcome(){              //make
         Code = OpCode.WELCOME;
     }
@@ -13,9 +14,11 @@ public class NetWelcome : NetMessage
     public override void Serialize(ref Unity.Collections.DataStreamWriter writer){
         writer.WriteByte((byte)Code);
         writer.WriteInt(Index);
+        writer.WriteInt(playerCount);
     }
     public override void Deserialize(Unity.Collections.DataStreamReader reader){
         Index = reader.ReadInt();
+        playerCount = reader.ReadInt();
     }
     public override void RecievedOnClient(){
         NetUtility.C_WELCOME?.Invoke(this);
