@@ -1,5 +1,5 @@
 /*
- * ovu skriptu koristimo za setup, praæenje poteza, kad se kome pali HUD i slicno
+ * ovu skriptu koristimo za setup, praï¿½enje poteza, kad se kome pali HUD i slicno
  */
 
 using System.Collections;
@@ -21,6 +21,7 @@ public class Setup : MonoBehaviour
     public int turn_player = 0;
     private int _MAX_PLAYERS = 8;
     public int playerCount;
+    public int deadCount = 0;
     private int connectedPlayer = -1;
     public int target = -1;
     public GameObject[] players;
@@ -30,6 +31,12 @@ public class Setup : MonoBehaviour
     public PlayerColors color;
 
     private int _MYINDEX = -1;
+
+    [Header("Victory Particle System")]
+    public ParticleSystem victoryParticle;
+    public GameObject _ENDSCREEN;
+    public GameObject _YOUWIN;
+    public GameObject _YOULOSE;
 
     private void Awake()
     {
@@ -41,6 +48,8 @@ public class Setup : MonoBehaviour
 
         if (playerCount > _MAX_PLAYERS) playerCount = _MAX_PLAYERS;
         SpawnPlayers();
+
+        deadCount = 0;
 
         secondaryInfoText = GameObject.Find("SecondaryInfo").GetComponent<TextMeshProUGUI>();
         primaryInfoText = GameObject.Find("PrimaryInfo").GetComponent<TextMeshProUGUI>();
@@ -123,14 +132,36 @@ public class Setup : MonoBehaviour
         }
     }
 
+    public void endScreen() {
+        Debug.Log("endscreen");
+        _ENDSCREEN.SetActive(true);
+        if(hotseat) {
+            victoryParticle.Play();
+            _YOUWIN.SetActive(true);
+        }
+        else
+        {
+            if(players[_MYINDEX].GetComponent<PlayerScript>().hp > 0) {
+                victoryParticle.Play();
+                _YOUWIN.SetActive(true);
+            }
+            else
+            {
+                _YOULOSE.SetActive(true);
+            }
+        }
+    }
+
     public void SpawnPlayers()
     {
-        if (players[0] != null) 
+        if (players[0] != null) {
+            deadCount = 0;
             for (int i = 0; i < players.Length; i++) {
                 players[i] = null;        //reset
                 GameObject t = GameObject.Find("Player " + (i));
                 Destroy(t);
             }
+        }
 
         Vector2 direction = new Vector2(0, -3.5f);
         Vector2 axis = new Vector2(-1, 0);
@@ -166,10 +197,10 @@ public class Setup : MonoBehaviour
     public void next_turn()
     {
         players[turn_player].GetComponent<PlayerScript>().turn_end();
-        if (++turn_player >= _MAX_PLAYERS) turn_player = 0;
+        if (++turn_player >= playerCount) turn_player = 0;
         while (players[turn_player].GetComponent<PlayerScript>().hp == 0)           //TODO: winner declaration
         {
-            if (++turn_player >= _MAX_PLAYERS) turn_player = 0;
+            if (++turn_player >= playerCount) turn_player = 0;
         }
         target = -1;
         SetNormal();

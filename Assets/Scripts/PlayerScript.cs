@@ -10,7 +10,7 @@ using UnityEngine;
 public class PlayerScript : MonoBehaviour
 {
     public int _NUMBER;
-    public int _MAXHP = 20;
+    public int _MAXHP = 1;
     public int hp;
 
     public int ability_block = 0;
@@ -19,6 +19,9 @@ public class PlayerScript : MonoBehaviour
     public PlayerColors color;
 
     public int target;
+
+    private bool alive = true;
+
     void Awake()
     {
         hp = _MAXHP;
@@ -50,6 +53,13 @@ public class PlayerScript : MonoBehaviour
         if (hp <= 0)
         {
             health = "0_health";
+            if (alive) {
+                alive = false;
+                int a = ++GameObject.Find("Main Camera").GetComponent<Setup>().deadCount;
+                if (GameObject.Find("Main Camera").GetComponent<Setup>().playerCount - a == 1) {
+                    GameObject.Find("Main Camera").GetComponent<Setup>().endScreen();
+                }
+            }
         }
         string spriteName = color.ToString() + "_Rook(" + health + ")";
         string path = "Sprites/All_Rook_Sprites/Rook_(" + health + ")/" + spriteName;

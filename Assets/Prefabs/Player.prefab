@@ -250,10 +250,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _NUMBER: 0
-  _MAXHP: 20
+  _MAXHP: 10
   hp: 0
   ability_block: 0
   color: 0
+  target: 0
 --- !u!65 &-923557519610120901
 BoxCollider:
   m_ObjectHideFlags: 0
